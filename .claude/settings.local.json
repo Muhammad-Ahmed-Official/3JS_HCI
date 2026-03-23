@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(node -e \"const p = require\\(''./node_modules/@mediapipe/tasks-vision/package.json''\\); console.log\\(JSON.stringify\\({main:p.main, module:p.module, types:p.types, exports: p.exports?.[''.'']}\\)\\);\")",
+      "Bash(node -e \"const p = require\\(''./node_modules/@mediapipe/tasks-vision/package.json''\\); console.log\\(JSON.stringify\\(p.exports, null, 2\\)\\);\")",
+      "Bash(npm run:*)"
+    ]
+  }
+}
