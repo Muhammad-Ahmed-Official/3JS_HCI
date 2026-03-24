@@ -110,6 +110,7 @@ export default function ParticleExperience() {
   const [handDetected,   setHandDetected]   = useState(false);
   const [isLoading,      setIsLoading]      = useState(true);
   const [loadingMessage, setLoadingMessage] = useState('Initializing…');
+  const [activeTemplate, setActiveTemplate] = useState<TemplateType>('abstract');
 
   // Dedup refs — prevent calling setState 60×/s when value hasn't changed
   const lastHandDetectedRef  = useRef(false);
@@ -578,8 +579,15 @@ export default function ParticleExperience() {
   const handleReset = useCallback(() => {
     velocitiesRef.current.fill(0);
     applyTemplate('abstract');
+    setActiveTemplate('abstract');
     // Snap particles back to template positions immediately
     positionsRef.current.set(targetsRef.current);
+  }, [applyTemplate]);
+
+  // ── Template switch ───────────────────────────────────────────────────────
+  const handleTemplateSwitch = useCallback((type: TemplateType) => {
+    setActiveTemplate(type);
+    applyTemplate(type);
   }, [applyTemplate]);
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -815,6 +823,66 @@ export default function ParticleExperience() {
               );
             })}
           </div>
+        </div>
+      )}
+
+      {/* ════════════════════════════════════════════════════════════════════
+          TEMPLATE SELECTOR — top centre
+          ════════════════════════════════════════════════════════════════════ */}
+      {!isLoading && (
+        <div
+          style={{
+            position:        'absolute',
+            top:             16,
+            left:            '50%',
+            transform:       'translateX(-50%)',
+            zIndex:          10,
+            display:         'flex',
+            gap:             8,
+            background:      'rgba(3,3,20,0.72)',
+            border:          '1px solid rgba(255,255,255,0.08)',
+            borderRadius:    28,
+            padding:         '6px 10px',
+            backdropFilter:  'blur(10px)',
+          }}
+        >
+          {([
+            { type: 'abstract'  as TemplateType, icon: '✨', label: 'Abstract'  },
+            { type: 'heart'     as TemplateType, icon: '❤️', label: 'Heart'     },
+            { type: 'flower'    as TemplateType, icon: '🌸', label: 'Flower'    },
+            { type: 'saturn'    as TemplateType, icon: '🪐', label: 'Saturn'    },
+            { type: 'fireworks' as TemplateType, icon: '🎆', label: 'Fireworks' },
+          ]).map(({ type, icon, label }) => {
+            const isActive = activeTemplate === type;
+            return (
+              <button
+                key={type}
+                onClick={() => handleTemplateSwitch(type)}
+                title={label}
+                style={{
+                  padding:        '4px 12px',
+                  borderRadius:   20,
+                  border:         isActive
+                                    ? '1px solid rgba(99,179,237,0.6)'
+                                    : '1px solid transparent',
+                  background:     isActive
+                                    ? 'rgba(99,179,237,0.18)'
+                                    : 'transparent',
+                  color:          isActive ? '#90cdf4' : '#64748b',
+                  fontSize:       12,
+                  cursor:         'pointer',
+                  display:        'flex',
+                  alignItems:     'center',
+                  gap:            5,
+                  transition:     'all 0.2s ease',
+                  whiteSpace:     'nowrap',
+                }}
+              >
+                <span style={{ fontSize: 15 }}>{icon}</span>
+                <span>{label}</span>
+              </button>
+            );
+          })}
         </div>
       )}
 
